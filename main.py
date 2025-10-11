@@ -1,4 +1,10 @@
-#! /usr/bin/env uv run
+#! /usr/bin/env uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "textual",
+# ]
+# ///
 from datetime import datetime
 
 from textual.app import App, ComposeResult
