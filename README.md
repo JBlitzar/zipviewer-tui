@@ -1,8 +1,8 @@
 # zipviewer-tui
 
 View and explore files in zip without unzipping
-
-![](demo.gif)
+![alt text](md/image.png)
+![](md/demo.gif)
 
 ## Installation
 
