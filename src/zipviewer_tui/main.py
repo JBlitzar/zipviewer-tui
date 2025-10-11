@@ -121,7 +121,7 @@ class FilePreview(Static):
     image_file_extensions = ["png", "jpg", "jpeg", "gif"]
     imgcat_exists = os.system("which imgcat > /dev/null 2>&1") == 0
 
-    def update_preview(self, path, content, appInstance):
+    def update_preview_showimg(self, path, content, appInstance):
         if path:
             ext = path.split(".")[-1].lower()
             if ext in self.image_file_extensions and self.imgcat_exists:
@@ -143,7 +143,14 @@ class FilePreview(Static):
                 self.update(
                     f"[bold green]Displayed image using imgcat:[/bold green] {path}"
                 )
-                return
+                return True
+        return False
+
+    def update_preview(self, path, content, appInstance):
+        if path:
+            ext = path.split(".")[-1].lower()
+            if ext in self.image_file_extensions and self.imgcat_exists:
+                self.update("Press v to view image...")
         if isinstance(content, bytes):
             try:
                 text = content.decode("utf-8")
@@ -181,6 +188,11 @@ class ZipViewerApp(App):
     BINDINGS = [
         Binding(key="q", action="quit", description="Quit the app"),
         Binding(key="e", action="extract_file", description="Extract selected file"),
+        Binding(
+            key="v",
+            action="view_image",
+            description="View image file (if selected and supported)",
+        ),
     ]
 
     def __init__(self, path, **kwargs):
@@ -240,6 +252,17 @@ class ZipViewerApp(App):
         if hasattr(self, "_selected_node"):
             if self._selected_node.data:
                 self.ziptree.extract_file_or_directory(self._selected_node.data)
+
+    def action_view_image(self) -> None:
+        if hasattr(self, "_selected_node"):
+            if self._selected_node.data:
+                content = self.ziptree.get_contents(self._selected_node.data)
+                preview_widget = self.query_one("#file-preview", FilePreview)
+                if content is not None:
+                    if not preview_widget.update_preview_showimg(
+                        self._selected_node.data, content, self
+                    ):
+                        self.bell()
 
 
 def main():
