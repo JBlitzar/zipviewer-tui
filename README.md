@@ -8,15 +8,24 @@ Uses [Textual](https://github.com/Textualize/textual) for TUI and [`imgcat`](htt
 
 ![](md/demo.gif)
 
+## Quickstart: Run without installing
+
+```bash
+uvx --from git+https://github.com/JBlitzar/zipviewer-tui zipviewer <zip_file_path>
+```
+
 ## Installation
 
 ```bash
-# Clone
+uv tool install git+https://github.com/JBlitzar/zipviewer-tui
+```
+
+### Installation for Development
+
+```bash
 git clone https://github.com/JBlitzar/zipviewer-tui.git && cd zipviewer-tui`
-# Install dependencies
 uv sync
-# _replace `~/pkg_stuff` with somewhere else in your PATH_
-ln main.py ~/pkg_stuff/zipviewer; chmod +x ~/pkg_stuff/zipviewer
+uv tool install .
 ```
 
 ## Usage
