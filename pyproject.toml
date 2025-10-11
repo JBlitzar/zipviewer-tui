@@ -10,4 +10,4 @@ dependencies = [
 
 
 [project.scripts]
-your-command = "main:main"
+zipviewer = "zipviewer_tui.main:main"
