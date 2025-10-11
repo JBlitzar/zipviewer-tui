@@ -1,3 +1,4 @@
+#! /usr/bin/env uv run
 from datetime import datetime
 
 from textual.app import App, ComposeResult
