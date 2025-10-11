@@ -1,7 +1,9 @@
 # zipviewer-tui
 
 View and explore files in zip without unzipping
+
 Uses [Textual](https://github.com/Textualize/textual) for TUI and [`imgcat`](https://iterm2.com/documentation-images.html) for viewing images in iTerm
+
 ![alt text](md/image.png)
 
 ## Demo
