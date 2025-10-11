@@ -145,8 +145,14 @@ class ZipViewerApp(App):
         Binding(key="e", action="extract_file", description="Extract selected file"),
     ]
 
+    def __init__(self, path, **kwargs):
+        super().__init__(**kwargs)
+        self.path = path
+        self.ziptree = ZipTree(os.path.expanduser(self.path))
+        self.ziptree_tree = self.ziptree.tree
+
     def compose(self) -> ComposeResult:
-        self.ziptree = ZipTree(os.path.expanduser("example.zip"))
+        self.ziptree = ZipTree(os.path.expanduser(self.path))
         self.ziptree_tree = self.ziptree.tree
         self.ziptree_tree.root.expand()
         with Horizontal():
@@ -201,5 +207,10 @@ class ZipViewerApp(App):
 
 
 if __name__ == "__main__":
-    app = ZipViewerApp()
+    if len(sys.argv) != 2:
+        print("Usage: zipviewer <zip_file_path>")
+        sys.exit(1)
+
+    zip_path = sys.argv[1]
+    app = ZipViewerApp(zip_path)
     app.run()
