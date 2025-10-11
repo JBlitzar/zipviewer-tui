@@ -236,7 +236,7 @@ class ZipViewerApp(App):
                 self.ziptree.extract_file_or_directory(self._selected_node.data)
 
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) != 2:
         print("Usage: zipviewer <zip_file_path>")
         sys.exit(1)
@@ -244,3 +244,7 @@ if __name__ == "__main__":
     zip_path = sys.argv[1]
     app = ZipViewerApp(zip_path)
     app.run()
+
+
+if __name__ == "__main__":
+    main()
