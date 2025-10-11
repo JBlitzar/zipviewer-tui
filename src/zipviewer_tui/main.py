@@ -69,8 +69,14 @@ class ZipTree:
         except KeyError:
             return None
 
-    def get_contents(self, file_path):
+    def get_contents(self, file_path, max_size=1 * 1024 * 1024 * 1024):  # 1GB limit
         try:
+            info = self.zipfile_inst.getinfo(file_path)
+            if info.file_size > max_size:
+                with self.zipfile_inst.open(file_path) as file:
+                    data = file.read(1024)  # Read first 1KB for preview
+                return data
+
             with self.zipfile_inst.open(file_path) as file:
                 return file.read()
         except KeyError:
