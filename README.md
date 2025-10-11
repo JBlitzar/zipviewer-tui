@@ -2,6 +2,9 @@
 
 View and explore files in zip without unzipping
 ![alt text](md/image.png)
+
+## Demo
+
 ![](md/demo.gif)
 
 ## Installation
