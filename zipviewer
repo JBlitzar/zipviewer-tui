@@ -159,8 +159,6 @@ class ZipViewerApp(App):
         self.ziptree_tree = self.ziptree.tree
 
     def compose(self) -> ComposeResult:
-        self.ziptree = ZipTree(os.path.expanduser(self.path))
-        self.ziptree_tree = self.ziptree.tree
         self.ziptree_tree.root.expand()
         with Horizontal():
             with Vertical(id="tree-container"):
