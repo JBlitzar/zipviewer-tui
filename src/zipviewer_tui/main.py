@@ -154,6 +154,7 @@ class FilePreview(Static):
                 text = "[bold yellow]Binary file[/bold yellow]\n"
                 text += f"First 256 bytes (hex):\n{' '.join(content[:256].hex()[i : i + 2] for i in range(0, len(content[:256].hex()), 2))}"
                 self.update(text)
+                return
         if isinstance(content, bytes):
             try:
                 text = content.decode("utf-8")
