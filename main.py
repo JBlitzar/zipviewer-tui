@@ -26,6 +26,7 @@ class ZipTree:
         self.tree = Tree(os.path.basename(path))
 
         file_list = self.zipfile_inst.namelist()
+        self.real_file_paths = []
         self._build_tree(file_list, include_metadata_files)
 
     def _build_tree(self, file_list, include_metadata_files):
@@ -47,11 +48,12 @@ class ZipTree:
                     break
                 else:
                     if part not in nodes:
-                        nodes[part] = current_node.add(part)
+                        nodes[part] = current_node.add(part, data=file_path)
                     current_node = nodes[part]
             if not (not include_metadata_files and is_metadata_file(parts[-1])):
                 if parts[-1]:
                     current_node.add_leaf(parts[-1], data=file_path)
+                    self.real_file_paths.append(file_path)
 
     def get_file_info(self, file_path):
         try:
@@ -84,6 +86,29 @@ class ZipTree:
             return True
         except KeyError:
             return False
+
+    def extract_directory(self, dir_path):
+        try:
+            dirname, _ = os.path.split(self.path)
+
+            dir_path = dir_path.rstrip("/") + "/"
+
+            for name in self.zipfile_inst.namelist():
+                if name.startswith(dir_path):
+                    self.zipfile_inst.extract(name, dirname)
+
+            out_dirname = os.path.join(dirname, dir_path)
+            os.system(f'open -a Finder "{out_dirname}"')
+
+            return True
+        except KeyError:
+            return False
+
+    def extract_file_or_directory(self, path):
+        if path.endswith("/"):
+            return self.extract_directory(path)
+        else:
+            return self.extract_file(path)
 
 
 class FilePreview(Static):
@@ -203,12 +228,12 @@ class ZipViewerApp(App):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if hasattr(self, "_selected_node"):
             if self._selected_node.data:
-                self.ziptree.extract_file(self._selected_node.data)
+                self.ziptree.extract_file_or_directory(self._selected_node.data)
 
     def action_extract_file(self) -> None:
         if hasattr(self, "_selected_node"):
             if self._selected_node.data:
-                self.ziptree.extract_file(self._selected_node.data)
+                self.ziptree.extract_file_or_directory(self._selected_node.data)
 
 
 if __name__ == "__main__":
