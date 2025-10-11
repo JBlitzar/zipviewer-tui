@@ -150,7 +150,10 @@ class FilePreview(Static):
         if path:
             ext = path.split(".")[-1].lower()
             if ext in self.image_file_extensions and self.imgcat_exists:
-                self.update("Press v to view image...")
+                text = "[bold green]Image viewing supported! Press v to view...[\bold green]\n"
+                text = "[bold yellow]Binary file[/bold yellow]\n"
+                text += f"First 256 bytes (hex):\n{' '.join(content[:256].hex()[i : i + 2] for i in range(0, len(content[:256].hex()), 2))}"
+                self.update(text)
         if isinstance(content, bytes):
             try:
                 text = content.decode("utf-8")

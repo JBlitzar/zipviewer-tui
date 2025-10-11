@@ -30,6 +30,12 @@ uv sync
 uv tool install .
 ```
 
+## Updating
+
+```bash
+uv tool upgrade zipviewer-tui
+```
+
 ## Usage
 
 ```bash
