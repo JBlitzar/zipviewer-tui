@@ -17,6 +17,7 @@ import os
 import sys
 import tty
 import termios
+import subprocess
 
 
 class ZipTree:
@@ -118,21 +119,39 @@ class ZipTree:
 
 
 class FilePreview(Static):
-    image_file_extensions = ["png", "jpg", "jpeg", "gif"]
-    imgcat_exists = os.system("which imgcat > /dev/null 2>&1") == 0
+    image_file_extensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "svg"]
+    chafa_exists = os.system("which chafa > /dev/null 2>&1") == 0
 
     def update_preview_showimg(self, path, content, appInstance):
         if path:
             ext = path.split(".")[-1].lower()
-            if ext in self.image_file_extensions and self.imgcat_exists:
+            if ext in self.image_file_extensions and self.chafa_exists:
                 tmp_path = f"/tmp/zipviewer_{os.getpid()}.{ext}"
                 with open(tmp_path, "wb") as f:
                     f.write(content)
 
                 with appInstance.suspend():
-                    os.system(f"imgcat {tmp_path}")
+                    # Get terminal size for better image display
+                    try:
+                        cols = os.get_terminal_size().columns
+                        lines = os.get_terminal_size().lines
+                        # Use chafa with optimal settings
+                        subprocess.run(
+                            [
+                                "chafa",
+                                "--size",
+                                f"{cols}x{lines - 2}",
+                                "--format",
+                                "symbols",
+                                tmp_path,
+                            ]
+                        )
+                    except Exception:
+                        # Fallback to simple chafa call
+                        subprocess.run(["chafa", tmp_path])
+
                     os.remove(tmp_path)
-                    print("Press any key to continue...")
+                    print("\nPress any key to continue...")
                     fd = sys.stdin.fileno()
                     old_settings = termios.tcgetattr(fd)
                     try:
@@ -141,7 +160,7 @@ class FilePreview(Static):
                     finally:
                         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
                 self.update(
-                    f"[bold green]Displayed image using imgcat:[/bold green] {path}"
+                    f"[bold green]Displayed image using chafa:[/bold green] {path}"
                 )
                 return True
         return False
@@ -149,7 +168,7 @@ class FilePreview(Static):
     def update_preview(self, path, content, appInstance):
         if path:
             ext = path.split(".")[-1].lower()
-            if ext in self.image_file_extensions and self.imgcat_exists:
+            if ext in self.image_file_extensions and self.chafa_exists:
                 text = "[bold green]Image viewing supported! Press v to view...[/bold green]\n"
                 text += "[bold yellow]Binary file[/bold yellow]\n"
                 text += f"First 256 bytes (hex):\n{' '.join(content[:256].hex()[i : i + 2] for i in range(0, len(content[:256].hex()), 2))}"
