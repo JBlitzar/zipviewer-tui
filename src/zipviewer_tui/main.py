@@ -120,7 +120,20 @@ class ZipTree:
 
 class FilePreview(Static):
     image_file_extensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "svg"]
-    chafa_exists = os.system("which chafa > /dev/null 2>&1") == 0
+
+    @staticmethod
+    def _check_chafa():
+        try:
+            result = subprocess.run(
+                ["which", "chafa"],
+                capture_output=True,
+                text=True,
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
+
+    chafa_exists = _check_chafa.__func__()
 
     def update_preview_showimg(self, path, content, appInstance):
         if path:
@@ -131,24 +144,7 @@ class FilePreview(Static):
                     f.write(content)
 
                 with appInstance.suspend():
-                    # Get terminal size for better image display
-                    try:
-                        cols = os.get_terminal_size().columns
-                        lines = os.get_terminal_size().lines
-                        # Use chafa with optimal settings
-                        subprocess.run(
-                            [
-                                "chafa",
-                                "--size",
-                                f"{cols}x{lines - 2}",
-                                "--format",
-                                "symbols",
-                                tmp_path,
-                            ]
-                        )
-                    except Exception:
-                        # Fallback to simple chafa call
-                        subprocess.run(["chafa", tmp_path])
+                    subprocess.run(["chafa", tmp_path])
 
                     os.remove(tmp_path)
                     print("\nPress any key to continue...")
